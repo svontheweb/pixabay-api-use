@@ -6,6 +6,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -27,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<ExampleItem> mExampleList;
     private RequestQueue mRequestQueue;
 
+    private EditText editText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         String TAG = "MyActivity";
@@ -35,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        editText = findViewById(R.id.editText);
+
+        Button button = findViewById(R.id.button);
 
 
         mRecyclerView = findViewById(R.id.recycler_view);
@@ -46,11 +54,28 @@ public class MainActivity extends AppCompatActivity {
         mRequestQueue = Volley.newRequestQueue(this);
 
 
-        parseJSON();
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = editText.getText().toString();
+                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                // Call the clearRecyclerView method
+                clearRecyclerView();
+                parseJSON();
+            }
+        });
+    }
+
+    private void clearRecyclerView() {
+        // Set the adapter to null
+        mRecyclerView.setAdapter(null);
+        // Clear the data source used by the adapter
+        mExampleList.clear();
     }
 
     private void parseJSON() {
-        String url = "https://pixabay.com/api/?key=5303976-fd6581ad4ac165d1b75cc15b3&q=kitten&image_type=photo&pretty=true";
+        String text = editText.getText().toString();
+        String url = String.format("https://pixabay.com/api/?key=5303976-fd6581ad4ac165d1b75cc15b3&q=%s&image_type=photo&pretty=true", text);
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
